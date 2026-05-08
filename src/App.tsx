@@ -590,20 +590,33 @@ function CoursesPage({ navigate, courses, user, enrollments, calendarEvents, onR
                       )}
                     </div>
                     <div className="course-footer">
-                      <span className="course-price">
-                        {isEnrolled ? (
-                          <span className="text-gold" style={{ fontWeight: '600' }}>✓ Enrolled</span>
-                        ) : (
-                          course.price ? (course.price.startsWith('₹') ? course.price : `₹${course.price}`) : 'Free'
+                      <div className="course-price-container">
+                        <span className="course-price">
+                          {isEnrolled ? (
+                            <span className="text-gold" style={{ fontWeight: '600' }}>✓ Enrolled</span>
+                          ) : (
+                            course.price ? (course.price.startsWith('₹') ? course.price : `₹${course.price}`) : 'Free'
+                          )}
+                        </span>
+                        {!isEnrolled && course.price && parseInt(course.price.replace(/[^0-9]/g, "")) > 0 && (
+                          <div className="payment-methods-mini">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" title="UPI Supported" />
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" title="Cards Supported" />
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                          </div>
                         )}
-                      </span>
+                      </div>
                       {!isEnrolled && (
                         <button 
                           className="course-enroll-btn" 
                           onClick={() => handleEnroll(course)}
                           disabled={payingFor === course.id}
                         >
-                          {payingFor === course.id ? "Processing..." : (user ? "Enroll Now" : "Login to Enroll")}
+                          {payingFor === course.id ? (
+                            <span className="btn-loader-container">
+                              <span className="btn-loader"></span> Processing...
+                            </span>
+                          ) : (user ? "Enroll Now" : "Login to Enroll")}
                         </button>
                       )}
                     </div>
@@ -611,6 +624,13 @@ function CoursesPage({ navigate, courses, user, enrollments, calendarEvents, onR
                 </div>
               );
             })}
+          </div>
+        )}
+        
+        {!loading && displayCourses.length > 0 && (
+          <div className="secure-checkout-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Secure 256-bit SSL Encrypted Payment via Razorpay
           </div>
         )}
       </section>

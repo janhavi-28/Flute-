@@ -1260,3 +1260,75 @@ a {
 .course-no-thumb {
   color: rgba(255, 255, 255, 0.2);
 }
+
+/* Professional Payment UI Fixes */
+.course-price-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.payment-methods-mini {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  opacity: 0.8;
+  filter: grayscale(1) brightness(1.5);
+  transition: var(--transition);
+}
+
+.course-card:hover .payment-methods-mini {
+  filter: grayscale(0) brightness(1);
+  opacity: 1;
+}
+
+.payment-methods-mini img {
+  height: 12px;
+  width: auto;
+  object-fit: contain;
+}
+
+.secure-checkout-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 48px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #888;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.secure-checkout-badge svg {
+  color: #4caf50;
+}
+
+/* Button Loader */
+.btn-loader-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-loader {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Enforce dark mode colors for payment section */
+.courses-section .course-price {
+  color: #fff;
+  font-style: normal;
+}
