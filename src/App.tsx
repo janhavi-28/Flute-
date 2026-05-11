@@ -111,7 +111,7 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
-  const [galleryItems, setGalleryItems] = useState<{id: string, url: string, title: string, category: string}[]>([]);
+  const [galleryItems, setGalleryItems] = useState<GalleryImage[]>([]);
   const [enrollments, setEnrollments] = useState<string[]>([]); // Array of course_ids
   const [heroImageUrl, setHeroImageUrl] = useState<string>(images.hero);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
@@ -289,7 +289,7 @@ function App() {
         {route === "FluteRoots" && <CoursesPage navigate={navigate} courses={courses} user={user} enrollments={enrollments} calendarEvents={calendarEvents} announcements={announcements} onRefresh={fetchData} heroImageUrl={heroImageUrl} loading={loading} isUserAdmin={isUserAdmin} setActiveCourseId={setActiveCourseId} />}
         {route === "organizersCorner" && <OrganizersCornerPage images={galleryItems} calendarEvents={calendarEvents} navigate={navigate} stageSetupUrl={stageSetupUrl} />}
         {route === "contact" && <ContactPage />}
-        {route === "coursePlayer" && activeCourseId && <CoursePlayerPage courseId={activeCourseId} courses={courses} user={user} navigate={navigate} />}
+        {route === "coursePlayer" && activeCourseId && <CoursePlayerPage courseId={activeCourseId} courses={courses} user={user} navigate={navigate} announcements={announcements} />}
         {route === "admin" && (isUserAdmin ? (
           <AdminPage 
             navigate={navigate} 
@@ -907,7 +907,7 @@ function CoursesPage({ navigate, courses, user, enrollments, calendarEvents, ann
   );
 }
 
-function CoursePlayerPage({ courseId, courses, user, navigate }: { courseId: string, courses: Course[], user: any, navigate: (to: AppRoute) => void }) {
+function CoursePlayerPage({ courseId, courses, user, navigate, announcements }: { courseId: string, courses: Course[], user: any, navigate: (to: AppRoute) => void, announcements: {title: string, text: string}[] }) {
   const course = courses.find(c => c.id === courseId);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -1027,7 +1027,7 @@ function CoursePlayerPage({ courseId, courses, user, navigate }: { courseId: str
                   
                   <div style={{ marginTop: '40px' }}>
                     <h4 style={{ fontSize: '16px', fontWeight: 700, color: '#1c1d1f', marginBottom: '16px' }}>Site-wide News</h4>
-                    {announcements.map((ann, idx) => (
+                    {announcements.map((ann: {title: string, text: string}, idx: number) => (
                       <div key={idx} style={{ marginBottom: '15px', padding: '15px', borderBottom: '1px solid #eee' }}>
                         <div style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>{ann.title}</div>
                         <div style={{ fontSize: '13px', color: '#6a6f73' }}>{ann.text}</div>
