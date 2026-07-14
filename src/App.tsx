@@ -3501,7 +3501,7 @@ function LoginPage({ navigate }: { navigate: (to: AppRoute) => void }) {
   // INITIALIZE GOOGLE BUTTON
   React.useEffect(() => {
     // Only initialize if the user is on the auth screen and Google SDK is loaded
-    if (!session && (window as any).google && document.getElementById("google-signin-button")) {
+    if ((window as any).google && document.getElementById("google-signin-button")) {
       (window as any).google.accounts.id.initialize({
         // 🛑 IMPORTANT: REPLACE THIS STRING WITH YOUR ACTUAL GOOGLE CLIENT ID! 🛑
         client_id: "283235165973-fdr95ubkkhi303k65c50c0ne0tbcpj7u.apps.googleusercontent.com",
@@ -3512,7 +3512,7 @@ function LoginPage({ navigate }: { navigate: (to: AppRoute) => void }) {
         { theme: "outline", size: "large", text: "continue_with", width: 350 }
       );
     }
-  }, [session, isSignUp]);
+  }, [isSignUp]);
 
   const handleOAuthLogin = async (provider: 'google' | 'azure') => {
     // Left as fallback in case the custom button fails to load
