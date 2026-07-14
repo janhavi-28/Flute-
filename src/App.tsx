@@ -3504,7 +3504,7 @@ function LoginPage({ navigate }: { navigate: (to: AppRoute) => void }) {
     if (!session && (window as any).google && document.getElementById("google-signin-button")) {
       (window as any).google.accounts.id.initialize({
         // 🛑 IMPORTANT: REPLACE THIS STRING WITH YOUR ACTUAL GOOGLE CLIENT ID! 🛑
-        client_id: "YOUR_GOOGLE_CLIENT_ID_HERE",
+        client_id: "283235165973-fdr95ubkkhi303k65c50c0ne0tbcpj7u.apps.googleusercontent.com",
         callback: handleGoogleCredentialResponse
       });
       (window as any).google.accounts.id.renderButton(
