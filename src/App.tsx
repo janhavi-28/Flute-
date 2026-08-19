@@ -119,6 +119,9 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
+  const [returnRoute, setReturnRoute] = useState<AppRoute | null>(null);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryImage[]>([]);
   const [enrollments, setEnrollments] = useState<string[]>([]); // Array of course_ids
@@ -328,6 +331,9 @@ function App() {
       if (_event === 'SIGNED_IN' || _event === 'SIGNED_OUT') {
         fetchData();
       }
+      if (_event === 'PASSWORD_RECOVERY') {
+        setShowPasswordChange(true);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -381,9 +387,74 @@ function App() {
             <div className="auth-nav">
               {isUserAdmin && <a href="/admin" onClick={(e) => { e.preventDefault(); navigate("admin"); }} className="dashboard-pill-btn">Dashboard</a>}
               {user ? (
-                <button onClick={() => supabase.auth.signOut()} className="nav-link signout-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', textTransform: 'none', letterSpacing: 'normal', fontWeight: 'normal' }}>Sign Out</button>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <button 
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '24px', transition: 'background 0.2s' }}
+                    title="Profile Settings"
+                  >
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', fontWeight: 'bold', fontSize: '16px' }}>
+                      {user.user_metadata?.full_name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                    </div>
+                  </button>
+                  
+                  {showUserMenu && (
+                    <>
+                      {/* Invisible backdrop to close the menu when clicking outside */}
+                      <div 
+                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99 }} 
+                        onClick={() => setShowUserMenu(false)}
+                      ></div>
+                      
+                      {/* Dropdown Menu */}
+                      <div 
+                        style={{ 
+                          position: 'absolute', top: '100%', right: 0, marginTop: '8px',
+                          background: 'white', borderRadius: '12px', 
+                          boxShadow: '0 4px 24px rgba(0,0,0,0.15)', 
+                          width: '280px', padding: '16px 0', 
+                          zIndex: 100, display: 'flex', flexDirection: 'column',
+                          border: '1px solid #f0f0f0'
+                        }}
+                      >
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 16px 16px', borderBottom: '1px solid #f0f0f0', marginBottom: '8px' }}>
+                          <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', fontSize: '28px', fontWeight: 'bold', marginBottom: '12px' }}>
+                            {user.user_metadata?.full_name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                          </div>
+                          <div style={{ fontWeight: '600', color: '#333', fontSize: '16px', textAlign: 'center' }}>
+                            {user.user_metadata?.full_name || 'User'}
+                          </div>
+                          <div style={{ fontSize: '13px', color: '#666', marginTop: '4px', textAlign: 'center' }}>
+                            {user.email}
+                          </div>
+                        </div>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', padding: '0 8px' }}>
+                          <button 
+                            onClick={() => { setShowPasswordChange(true); setShowUserMenu(false); }} 
+                            style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontSize: '14px', color: '#333', borderRadius: '8px', transition: 'background 0.2s' }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'none'}
+                          >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            Change Password
+                          </button>
+                          <button 
+                            onClick={() => { supabase.auth.signOut(); setShowUserMenu(false); }} 
+                            style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontSize: '14px', color: '#d32f2f', borderRadius: '8px', transition: 'background 0.2s' }}
+                            onMouseOver={(e) => e.currentTarget.style.background = '#fff0f0'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'none'}
+                          >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            Sign Out
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               ) : (
-                <a href="/login" onClick={(e) => { e.preventDefault(); navigate("login"); }} className="nav-link login-btn">Login</a>
+                <a href="/login" onClick={(e) => { e.preventDefault(); setReturnRoute(route); navigate("login"); }} className="nav-link login-btn">Login</a>
               )}
             </div>
           </div>
@@ -423,10 +494,11 @@ function App() {
             weeklySchedule={weeklySchedule}
             setWeeklySchedule={setWeeklySchedule}
           />
-        ) : <LoginPage navigate={navigate} />)}
-        {route === "login" && <LoginPage navigate={navigate} />}
+        ) : <LoginPage navigate={navigate} returnRoute={returnRoute} />)}
+        {route === "login" && <LoginPage navigate={navigate} returnRoute={returnRoute} />}
       </main>
       {!onAdminPage && <Footer />}
+      {showPasswordChange && <PasswordChangeModal onClose={() => setShowPasswordChange(false)} />}
     </div>
   );
 }
@@ -3450,8 +3522,10 @@ function AdminPage({
   );
 }
 
-function LoginPage({ navigate }: { navigate: (to: AppRoute) => void }) {
+function LoginPage({ navigate, returnRoute }: { navigate: (to: AppRoute) => void, returnRoute?: AppRoute | null }) {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -3463,14 +3537,35 @@ function LoginPage({ navigate }: { navigate: (to: AppRoute) => void }) {
     setMessage("");
 
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password });
+      if (isForgotPassword) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin,
+        });
         if (error) throw error;
-        setMessage("Check your email for the confirmation link!");
+        setMessage("Check your email for the password reset link!");
+      } else if (isSignUp) {
+        const { data, error } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: { 
+            data: { full_name: fullName },
+            emailRedirectTo: window.location.origin + "/login"
+          }
+        });
+        if (error) throw error;
+        
+        // If email confirmation is turned OFF in Supabase, data.session will exist.
+        // We can immediately log them in and redirect!
+        if (data.session) {
+          navigate(returnRoute || "home");
+        } else {
+          // If it's still ON, we show the message
+          setMessage("Check your email for the confirmation link!");
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate("home");
+        navigate(returnRoute || "home");
       }
     } catch (err: any) {
       setMessage(err.message);
@@ -3490,7 +3585,7 @@ function LoginPage({ navigate }: { navigate: (to: AppRoute) => void }) {
         token: response.credential,
       });
       if (error) throw error;
-      // Login successful, Supabase session will automatically update
+      navigate(returnRoute || "home");
     } catch (err: any) {
       setMessage(err.message);
     } finally {
@@ -3536,39 +3631,112 @@ function LoginPage({ navigate }: { navigate: (to: AppRoute) => void }) {
   return (
     <div className="admin-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
       <div className="admin-form-container" style={{ maxWidth: '400px', width: '100%' }}>
-        <h2 className="text-serif text-center" style={{ marginBottom: '32px' }}>{isSignUp ? "Create Account" : "Login"}</h2>
+        <h2 className="text-serif text-center" style={{ marginBottom: '32px' }}>
+          {isForgotPassword ? "Reset Password" : (isSignUp ? "Create Account" : "Login")}
+        </h2>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-          {/* This empty div is where Google will inject the native button */}
-          <div id="google-signin-button" style={{ display: 'flex', justifyContent: 'center' }}></div>
-        </div>
+        {!isForgotPassword && (
+          <>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+              {/* This empty div is where Google will inject the native button */}
+              <div id="google-signin-button" style={{ display: 'flex', justifyContent: 'center' }}></div>
+            </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', margin: '24px 0' }}>
-          <div style={{ flex: 1, height: '1px', background: '#e0e0e0' }}></div>
-          <span style={{ padding: '0 12px', color: '#666', fontSize: '14px' }}>OR</span>
-          <div style={{ flex: 1, height: '1px', background: '#e0e0e0' }}></div>
-        </div>
+            <div style={{ display: 'flex', alignItems: 'center', margin: '24px 0' }}>
+              <div style={{ flex: 1, height: '1px', background: '#e0e0e0' }}></div>
+              <span style={{ padding: '0 12px', color: '#666', fontSize: '14px' }}>OR</span>
+              <div style={{ flex: 1, height: '1px', background: '#e0e0e0' }}></div>
+            </div>
+          </>
+        )}
 
         <form onSubmit={handleAuth} className="admin-form">
+          {!isForgotPassword && isSignUp && (
+            <div className="admin-field">
+              <label>Full Name</label>
+              <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} required={isSignUp} placeholder="Jane Doe" />
+            </div>
+          )}
           <div className="admin-field">
             <label>Email Address</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="email@example.com" />
           </div>
-          <div className="admin-field">
-            <label>Password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" />
-          </div>
-          {message && <div style={{ padding: '12px', borderRadius: '6px', background: '#f8f9fa', color: '#666', fontSize: '14px', marginBottom: '16px' }}>{message}</div>}
-          <button type="submit" className="admin-btn admin-btn-primary" style={{ width: '100%' }} disabled={loading}>
-            {loading ? "Processing..." : (isSignUp ? "Sign Up" : "Login")}
+          {!isForgotPassword && (
+            <div className="admin-field" style={{ marginBottom: '8px' }}>
+              <label>Password</label>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" />
+            </div>
+          )}
+          {!isForgotPassword && !isSignUp && (
+            <div style={{ textAlign: 'right', marginBottom: '16px' }}>
+              <button type="button" onClick={() => setIsForgotPassword(true)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: '13px', padding: 0 }}>
+                Forgot Password?
+              </button>
+            </div>
+          )}
+          {message && <div style={{ padding: '12px', borderRadius: '6px', background: message.includes('success') || message.includes('Check') ? '#d4edda' : '#f8d7da', color: message.includes('success') || message.includes('Check') ? '#155724' : '#721c24', fontSize: '14px', marginBottom: '16px' }}>{message}</div>}
+          <button type="submit" className="admin-btn admin-btn-primary" style={{ width: '100%', marginTop: isForgotPassword ? '16px' : '0' }} disabled={loading}>
+            {loading ? "Processing..." : (isForgotPassword ? "Send Reset Link" : (isSignUp ? "Sign Up" : "Login"))}
           </button>
         </form>
+        
         <p className="text-center" style={{ marginTop: '24px', fontSize: '14px' }}>
-          {isSignUp ? "Already have an account?" : "New to the platform?"}{" "}
-          <button onClick={() => setIsSignUp(!isSignUp)} style={{ background: 'none', border: 'none', color: 'var(--gold)', cursor: 'pointer', fontWeight: '600' }}>
-            {isSignUp ? "Login instead" : "Create one now"}
-          </button>
+          {isForgotPassword ? (
+            <button onClick={() => setIsForgotPassword(false)} style={{ background: 'none', border: 'none', color: 'var(--gold)', cursor: 'pointer', fontWeight: '600' }}>
+              Back to Login
+            </button>
+          ) : (
+            <>
+              {isSignUp ? "Already have an account?" : "New to the platform?"}{" "}
+              <button onClick={() => setIsSignUp(!isSignUp)} style={{ background: 'none', border: 'none', color: 'var(--gold)', cursor: 'pointer', fontWeight: '600' }}>
+                {isSignUp ? "Login instead" : "Create one now"}
+              </button>
+            </>
+          )}
         </p>
+      </div>
+    </div>
+  );
+}
+
+function PasswordChangeModal({ onClose }: { onClose: () => void }) {
+  const [newPassword, setNewPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      setMessage("Password updated successfully!");
+      setTimeout(() => onClose(), 2000);
+    } catch (err: any) {
+      setMessage(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+      <div style={{ background: 'white', padding: '32px', borderRadius: '8px', maxWidth: '400px', width: '90%' }}>
+        <h3 style={{ marginBottom: '24px', fontFamily: 'var(--font-serif)' }}>Change Password</h3>
+        <form onSubmit={handleUpdate} className="admin-form">
+          <div className="admin-field">
+            <label>New Password</label>
+            <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required placeholder="••••••••" />
+          </div>
+          {message && <div style={{ padding: '12px', borderRadius: '6px', background: message.includes('success') ? '#d4edda' : '#f8d7da', color: message.includes('success') ? '#155724' : '#721c24', fontSize: '14px', marginBottom: '16px' }}>{message}</div>}
+          <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+            <button type="button" onClick={onClose} className="admin-btn" style={{ flex: 1, background: '#f8f9fa', color: '#333' }}>Cancel</button>
+            <button type="submit" className="admin-btn admin-btn-primary" style={{ flex: 1 }} disabled={loading}>
+              {loading ? "Updating..." : "Update"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

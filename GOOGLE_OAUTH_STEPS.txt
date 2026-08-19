@@ -1,0 +1,42 @@
+GOOGLE OAUTH SETUP GUIDE FOR FLUTEROOTS
+
+STEP 1: CREATE OR SELECT A PROJECT
+1. Go to the Google Cloud Console: https://console.cloud.google.com/
+2. Look at the top left of your screen, next to the "Google Cloud" logo. Click the button that currently says "GreenRemote Auth" (or whatever project is selected).
+3. In the window that pops up, click "NEW PROJECT" in the top right corner.
+4. Name the project "FluteRoots Auth" and click Create.
+5. Wait a few seconds, then make sure "FluteRoots Auth" is selected in that top-left dropdown.
+
+STEP 2: SET UP THE "OAUTH CONSENT SCREEN"
+1. In the middle of your screen under "Quick access", click the "APIs and services" button. 
+   (If you don't see it, click the three horizontal lines at the very top-left to open the menu, then click "APIs & Services").
+2. On the left-hand menu, click "OAuth consent screen".
+3. Choose "External" (this allows anyone on the internet to log in) and click "Create".
+4. Fill out the required fields:
+   - App name: FluteRoots
+   - User support email: (Select your email from the dropdown)
+   - Developer contact information: (Type your email again at the very bottom)
+5. Click "Save and Continue" at the bottom of the next 3 screens (Scopes, Test Users, Summary) until you reach the end.
+6. CRITICAL STEP: Back on the main OAuth consent screen page, click the "PUBLISH APP" button. If you skip this, only you will be able to log in!
+
+STEP 3: GET THE CREDENTIALS
+1. On the left-hand menu, click "Credentials".
+2. At the top of the screen, click the "+ CREATE CREDENTIALS" button.
+3. Select "OAuth client ID" from the dropdown.
+4. For Application type, select "Web application".
+5. Name it "Supabase Web Client".
+6. Scroll down to "Authorized redirect URIs" and click the "ADD URI" button.
+7. Paste EXACTLY this link into the box: 
+   https://wfyvndcialfvggzpooyv.supabase.co/auth/v1/callback
+8. Click "Create".
+
+STEP 4: PUT THE KEYS INTO SUPABASE
+1. A box will pop up displaying your "Client ID" and "Client Secret". Keep this tab open.
+2. Open a new tab and go to your Supabase Dashboard -> Authentication -> Providers.
+3. Click on "Google" to open its settings.
+4. Toggle "Enable Google" to the ON position.
+5. Copy the Client ID from Google and paste it into Supabase.
+6. Copy the Client Secret from Google and paste it into Supabase.
+7. Click Save in Supabase.
+
+You are done! The Google login button on your website will now work perfectly.

@@ -1,0 +1,47 @@
+=========================================================
+HOW TO SET UP MICROSOFT LOGIN WITH SUPABASE
+=========================================================
+
+1. Go to the Azure Portal:
+   Log into https://portal.azure.com
+
+2. Register the App:
+   - Search the top bar for "Microsoft Entra ID" (formerly Azure Active Directory).
+   - On the left menu, click "App registrations".
+   - Click the "+ New registration" button at the top.
+   - Name your app (e.g., "Digvijay Chauhan Website").
+
+3. Choose Account Type:
+   - Under "Supported account types", choose the bottom option: 
+     "Accounts in any organizational directory and personal Microsoft accounts"
+     (This ensures anyone with a Microsoft/Xbox/Skype account can log in).
+
+4. Add the Redirect URI (Crucial step):
+   - Under the "Redirect URI" section, select "Web" from the dropdown.
+   - Paste your exact Supabase Callback URL into the box:
+     https://wfyvndcialfvggzpooyv.supabase.co/auth/v1/callback
+   - Click the "Register" button at the bottom.
+
+5. Get the Client ID:
+   - After it registers, you will be taken to the Overview page.
+   - Copy the "Application (client) ID".
+   - Go to your Supabase Dashboard -> Authentication -> Providers -> Microsoft.
+   - Paste this into the "Client ID" box.
+
+6. Get the Client Secret:
+   - Back in the Azure Portal, click "Certificates & secrets" on the left menu.
+   - Click the "+ New client secret" button.
+   - Give it a description (like "Supabase Auth") and click Add.
+   - **IMPORTANT:** Copy the "Value" (do NOT copy the Secret ID). 
+     Note: This value will be hidden if you leave the page, so copy it immediately.
+   - Go to your Supabase Dashboard -> Authentication -> Providers -> Microsoft.
+   - Paste this into the "Client Secret" box.
+
+7. Enable & Save!
+   - Make sure the "Enable Microsoft" toggle is turned on in Supabase.
+   - Click Save. 
+
+Your Microsoft login button is now ready to use!
+
+Video Tutorial Search Link for visual reference:
+https://www.youtube.com/results?search_query=How+to+setup+Microsoft+Login+in+Supabase
