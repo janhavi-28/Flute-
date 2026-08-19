@@ -347,6 +347,11 @@ function App() {
         setRoute(path as AppRoute);
       }
     };
+    
+    // Auto-redirect if trying to access login while already logged in
+    if (user && route === "login") {
+      navigate("home");
+    }
 
     window.addEventListener("popstate", handlePopState);
     
