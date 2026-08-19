@@ -122,6 +122,7 @@ function App() {
   const [returnRoute, setReturnRoute] = useState<AppRoute | null>(null);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryImage[]>([]);
   const [enrollments, setEnrollments] = useState<string[]>([]); // Array of course_ids
@@ -374,7 +375,7 @@ function App() {
       {!onAdminPage && (
         <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
           <div className="nav-container">
-            <div className="brand-logo" onClick={() => navigate("home")} style={{ cursor: 'pointer' }}>
+            <div className="brand-logo" onClick={() => { navigate("home"); setIsMobileMenuOpen(false); }} style={{ cursor: 'pointer' }}>
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--bg-dark)' }}>
                 <path d="M2 22C2 22 6.5 20.5 11 16C15.5 11.5 16.5 6.5 16.5 6.5C16.5 6.5 11.5 7.5 7 12C2.5 16.5 2 22 2 22Z" fill="currentColor" />
                 <path d="M12 13C12 13 15 12.5 18 9.5C21 6.5 21.5 2.5 21.5 2.5C21.5 2.5 17.5 3 14.5 6C11.5 9 11 12 11 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -382,85 +383,96 @@ function App() {
               </svg>
               <span className="logo-text" style={{ fontSize: '22px', transition: 'color 0.3s' }}>Flute Roots</span>
             </div>
-            <nav className="site-nav">
-              <a href="/" onClick={(e) => { e.preventDefault(); navigate("home"); }} className={`nav-link ${route === "home" ? "active" : ""}`}>HOME</a>
-              <a href="/FluteRoots" onClick={(e) => { e.preventDefault(); navigate("FluteRoots"); }} className={`nav-link ${route === "FluteRoots" ? "active" : ""}`}>COURSES</a>
-              <a href="/organizersCorner" onClick={(e) => { e.preventDefault(); navigate("organizersCorner"); }} className={`nav-link ${route === "organizersCorner" ? "active" : ""}`}>ORGANIZERS CORNER</a>
-              <a href="/biography" onClick={(e) => { e.preventDefault(); navigate("biography"); }} className={`nav-link ${route === "biography" ? "active" : ""}`}>BIOGRAPHY</a>
-              <a href="/contact" onClick={(e) => { e.preventDefault(); navigate("contact"); }} className={`nav-link ${route === "contact" ? "active" : ""}`}>CONTACT</a>
-            </nav>
-            <div className="auth-nav">
-              {isUserAdmin && <a href="/admin" onClick={(e) => { e.preventDefault(); navigate("admin"); }} className="dashboard-pill-btn">Dashboard</a>}
-              {user ? (
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <button 
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '24px', transition: 'background 0.2s' }}
-                    title="Profile Settings"
-                  >
-                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', fontWeight: 'bold', fontSize: '16px' }}>
-                      {user.user_metadata?.full_name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
-                    </div>
-                  </button>
-                  
-                  {showUserMenu && (
-                    <>
-                      {/* Invisible backdrop to close the menu when clicking outside */}
-                      <div 
-                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99 }} 
-                        onClick={() => setShowUserMenu(false)}
-                      ></div>
-                      
-                      {/* Dropdown Menu */}
-                      <div 
-                        style={{ 
-                          position: 'absolute', top: '100%', right: 0, marginTop: '8px',
-                          background: 'white', borderRadius: '12px', 
-                          boxShadow: '0 4px 24px rgba(0,0,0,0.15)', 
-                          width: '280px', padding: '16px 0', 
-                          zIndex: 100, display: 'flex', flexDirection: 'column',
-                          border: '1px solid #f0f0f0'
-                        }}
-                      >
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 16px 16px', borderBottom: '1px solid #f0f0f0', marginBottom: '8px' }}>
-                          <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', fontSize: '28px', fontWeight: 'bold', marginBottom: '12px' }}>
-                            {user.user_metadata?.full_name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
-                          </div>
-                          <div style={{ fontWeight: '600', color: '#333', fontSize: '16px', textAlign: 'center' }}>
-                            {user.user_metadata?.full_name || 'User'}
-                          </div>
-                          <div style={{ fontSize: '13px', color: '#666', marginTop: '4px', textAlign: 'center' }}>
-                            {user.email}
-                          </div>
-                        </div>
-                        
-                        <div style={{ display: 'flex', flexDirection: 'column', padding: '0 8px' }}>
-                          <button 
-                            onClick={() => { setShowPasswordChange(true); setShowUserMenu(false); }} 
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontSize: '14px', color: '#333', borderRadius: '8px', transition: 'background 0.2s' }}
-                            onMouseOver={(e) => e.currentTarget.style.background = '#f5f5f5'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'none'}
-                          >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                            Change Password
-                          </button>
-                          <button 
-                            onClick={() => { supabase.auth.signOut(); setShowUserMenu(false); }} 
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontSize: '14px', color: '#d32f2f', borderRadius: '8px', transition: 'background 0.2s' }}
-                            onMouseOver={(e) => e.currentTarget.style.background = '#fff0f0'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'none'}
-                          >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                            Sign Out
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
+            
+            <button className="mobile-menu-toggle" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Toggle menu">
+              {isMobileMenuOpen ? (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               ) : (
-                <a href="/login" onClick={(e) => { e.preventDefault(); setReturnRoute(route); navigate("login"); }} className="nav-link login-btn">Login</a>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
               )}
+            </button>
+
+            <div className={`mobile-menu-wrapper ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+              <nav className="site-nav">
+                <a href="/" onClick={(e) => { e.preventDefault(); navigate("home"); setIsMobileMenuOpen(false); }} className={`nav-link ${route === "home" ? "active" : ""}`}>HOME</a>
+                <a href="/FluteRoots" onClick={(e) => { e.preventDefault(); navigate("FluteRoots"); setIsMobileMenuOpen(false); }} className={`nav-link ${route === "FluteRoots" ? "active" : ""}`}>COURSES</a>
+                <a href="/organizersCorner" onClick={(e) => { e.preventDefault(); navigate("organizersCorner"); setIsMobileMenuOpen(false); }} className={`nav-link ${route === "organizersCorner" ? "active" : ""}`}>ORGANIZERS CORNER</a>
+                <a href="/biography" onClick={(e) => { e.preventDefault(); navigate("biography"); setIsMobileMenuOpen(false); }} className={`nav-link ${route === "biography" ? "active" : ""}`}>BIOGRAPHY</a>
+                <a href="/contact" onClick={(e) => { e.preventDefault(); navigate("contact"); setIsMobileMenuOpen(false); }} className={`nav-link ${route === "contact" ? "active" : ""}`}>CONTACT</a>
+              </nav>
+              <div className="auth-nav">
+                {isUserAdmin && <a href="/admin" onClick={(e) => { e.preventDefault(); navigate("admin"); }} className="dashboard-pill-btn">Dashboard</a>}
+                {user ? (
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <button 
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '24px', transition: 'background 0.2s' }}
+                      title="Profile Settings"
+                    >
+                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', fontWeight: 'bold', fontSize: '16px' }}>
+                        {user.user_metadata?.full_name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
+                    </button>
+                    
+                    {showUserMenu && (
+                      <>
+                        {/* Invisible backdrop to close the menu when clicking outside */}
+                        <div 
+                          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99 }} 
+                          onClick={() => setShowUserMenu(false)}
+                        ></div>
+                        
+                        {/* Dropdown Menu */}
+                        <div 
+                          style={{ 
+                            position: 'absolute', top: '100%', right: 0, marginTop: '8px',
+                            background: 'white', borderRadius: '12px', 
+                            boxShadow: '0 4px 24px rgba(0,0,0,0.15)', 
+                            width: '280px', padding: '16px 0', 
+                            zIndex: 100, display: 'flex', flexDirection: 'column',
+                            border: '1px solid #f0f0f0'
+                          }}
+                        >
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 16px 16px', borderBottom: '1px solid #f0f0f0', marginBottom: '8px' }}>
+                            <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', fontSize: '28px', fontWeight: 'bold', marginBottom: '12px' }}>
+                              {user.user_metadata?.full_name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                            </div>
+                            <div style={{ fontWeight: '600', color: '#333', fontSize: '16px', textAlign: 'center' }}>
+                              {user.user_metadata?.full_name || 'User'}
+                            </div>
+                            <div style={{ fontSize: '13px', color: '#666', marginTop: '4px', textAlign: 'center' }}>
+                              {user.email}
+                            </div>
+                          </div>
+                          
+                          <div style={{ display: 'flex', flexDirection: 'column', padding: '0 8px' }}>
+                            <button 
+                              onClick={() => { setShowPasswordChange(true); setShowUserMenu(false); }} 
+                              style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontSize: '14px', color: '#333', borderRadius: '8px', transition: 'background 0.2s' }}
+                              onMouseOver={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                              onMouseOut={(e) => e.currentTarget.style.background = 'none'}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                              Change Password
+                            </button>
+                            <button 
+                              onClick={() => { supabase.auth.signOut(); setShowUserMenu(false); setIsMobileMenuOpen(false); }} 
+                              style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontSize: '14px', color: '#d32f2f', borderRadius: '8px', transition: 'background 0.2s' }}
+                              onMouseOver={(e) => e.currentTarget.style.background = '#fff0f0'}
+                              onMouseOut={(e) => e.currentTarget.style.background = 'none'}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                              Sign Out
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <a href="/login" onClick={(e) => { e.preventDefault(); setReturnRoute(route); setIsMobileMenuOpen(false); navigate("login"); }} className="nav-link login-btn">Login</a>
+                )}
+              </div>
             </div>
           </div>
         </header>
