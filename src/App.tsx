@@ -1904,11 +1904,11 @@ function AdminPage({
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, bucket: 'images' | 'images') => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, uploadType: 'video' | 'gallery') => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    setUploading(bucket === 'images' ? 'images' : 'gallery');
+    setUploading(uploadType);
     
     try {
       if (!user) {
@@ -1933,7 +1933,7 @@ function AdminPage({
         const fileName = `${Date.now()}_${cleanBaseName}.${fileExt}`;
         
         const { error: uploadError } = await supabase.storage
-          .from(bucket)
+          .from('images')
           .upload(fileName, file, {
             cacheControl: '3600',
             upsert: true,
@@ -1943,10 +1943,10 @@ function AdminPage({
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
-          .from(bucket)
+          .from('images')
           .getPublicUrl(fileName);
 
-        if (bucket === 'images') {
+        if (uploadType === 'video') {
           setForm(prev => ({ ...prev, video_url: publicUrl }));
           fetchVideos();
           showToast("Video uploaded successfully!");
@@ -1958,7 +1958,7 @@ function AdminPage({
         }
       }
 
-      if (bucket === 'images') {
+      if (uploadType === 'gallery') {
         onRefresh();
         showToast(`${files.length} images added to gallery!`);
       }
@@ -3421,7 +3421,7 @@ function AdminPage({
                   type="file" 
                   accept="image/*" 
                   multiple
-                  onChange={(e) => handleFileUpload(e, 'images')} 
+                  onChange={(e) => handleFileUpload(e, 'gallery')} 
                   disabled={uploading === 'gallery'}
                 />
                 {uploading === 'gallery' && <p style={{ color: 'var(--gold)', marginTop: '10px' }}>UPLOADING... {uploadProgress}</p>}
